@@ -11,12 +11,22 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import java.util.concurrent.Executors;
+
 public class Server {
 
 	public static void main(String[] args) throws Exception {
+		int numCPUs = 0;
+		if (args.length == 1) {
+			numCPUs = Integer.parseInt(args[0]);
+		} else {
+			numCPUs = Runtime.getRuntime().availableProcessors();
+		}
+		System.out.println("Using numCPUs = " + numCPUs);
+
 		HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 		server.createContext("/", new MyHandler());
-		server.setExecutor(null);
+		server.setExecutor(Executors.newFixedThreadPool(numCPUs));
 		server.start();
 	}
 
